@@ -4,7 +4,7 @@
     "alt_match_pattern": null,
     "extractor": null,
     "level": "l1",
-    "type": "ancillary",
+    "type": "ancillary"
   },
   {
     "ipath": "hysds::data/metadata-AST_09T",
@@ -12,7 +12,7 @@
     "alt_match_pattern": null,
     "extractor": null,
     "level": "l1",
-    "type": "ancillary",
+    "type": "ancillary"
   },
   {
     "ipath": "hysds::data/metadata-AST_L1B",
@@ -20,7 +20,7 @@
     "alt_match_pattern": null,
     "extractor": null,
     "level": "l1",
-    "type": "ancillary",
+    "type": "ancillary"
   },
   {
     "ipath": "hysds::data/metadata-EO1_ALI",
@@ -28,7 +28,7 @@
     "alt_match_pattern": null,
     "extractor": null,
     "level": "l1",
-    "type": "ancillary",
+    "type": "ancillary"
   },
   {
     "ipath": "hysds::data/metadata-EO1_Hyperion",
@@ -36,7 +36,7 @@
     "alt_match_pattern": null,
     "extractor": null,
     "level": "l1",
-    "type": "ancillary",
+    "type": "ancillary"
   },
   {
     "ipath": "hysds::data/metadata-ASTGTM",
@@ -44,7 +44,7 @@
     "alt_match_pattern": null,
     "extractor": null,
     "level": "l1",
-    "type": "ancillary",
+    "type": "ancillary"
   },
   {
     "ipath": "hysds::data/metadata-AST14DEM",
@@ -52,5 +52,5 @@
     "alt_match_pattern": null,
     "extractor": null,
     "level": "l1",
-    "type": "ancillary",
+    "type": "ancillary"
   },
