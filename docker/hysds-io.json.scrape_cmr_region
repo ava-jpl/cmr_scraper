@@ -1,0 +1,31 @@
+{
+  "label" : "CMR - Scrape User Region",
+  "submission_type" : "individual",
+  "component" : "tosca",
+  "allowed_accounts" : ["ops"],
+  "params" : [
+    {
+      "name": "short_name",
+      "from": "submitter",
+      "type": "enum",
+      "enumerables": ["AST_L1T", "AST_L1B", "AST_09T", "ASTGTM", "AST14DEM", "EO1_ALI", "EO1_Hyperion"]
+    },
+    {
+      "name": "location",
+      "from": "submitter",
+      "type": "region"
+    },
+    {
+      "name": "starttime",
+      "from": "submitter",
+      "type": "text",
+      "placeholder":"any parseable format"
+    },
+    {
+      "name": "endtime",
+      "from": "submitter",
+      "type": "text",
+      "placeholder":"any parseable format"
+    }
+  ]
+}

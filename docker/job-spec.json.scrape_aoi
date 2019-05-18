@@ -1,0 +1,22 @@
+{
+  "recommended_queues":["factotum-job_worker-small", "factotum-job_worker-large", "ava-job_worker-small"],
+  "command":"/home/ops/verdi/ops/cmr_scraper/scrape.py",
+  "imported_worker_files": {
+    "/home/ops/.netrc": "/home/ops/.netrc",
+    "/home/ops/.aws": "/home/ops/.aws"
+  },
+  "disk_usage":"3GB",
+  "soft_time_limit": 300,
+  "time_limit": 1200,
+  "params" : [
+    {
+      "name": "short_name",
+      "destination": "context"
+    },
+    {
+      "name": "location",
+      "destination": "context"
+    }
+  ]
+}
+
