@@ -18,7 +18,7 @@ from hysds.dataset_ingest import ingest
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 VERSION = "v1.0"
-PROD = "MET-{}-{}-{}-{}"
+PROD = "MET-{}-{}-{}"
 PROD_TYPE = "grq_{}_metadata-{}"
 CMR_URL = 'https://cmr.earthdata.nasa.gov'
 
@@ -92,11 +92,18 @@ def gen_product(result, shortname):
     dt_str = dateutil.parser.parse(starttime).strftime('%Y%m%d')
     endtime = result["time_end"]
     location = parse_location(result)
-    prod_id = PROD.format(shortname, dt_str, result["producer_granule_id"], VERSION)
+    prod_id = gen_prod_id(shortname, starttime, endtime)
     ds = {"label": prod_id, "starttime": starttime, "endtime": endtime, "location": location, "version": VERSION}
     met = result
     met['shortname'] = shortname
     return ds, met
+
+def gen_prod_id(shortname, starttime, endtime):
+    '''generates the product id from the input metadata & params'''
+    start = dateutil.parser.parse(starttime).strftime('%Y%m%dT%H%M%S')
+    end = dateutil.parser.parse(endtime).strftime('%Y%m%dT%H%M%S')
+    time_str = '{}_{}'.format(start, end)
+    return PROD.format(shortname, time_str, VERSION)
 
 def ingest_product(ds, met):
     '''publish a product directly'''

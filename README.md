@@ -18,3 +18,5 @@ Job is of type iteration. It takes in an input AOI, and queries the CMR for all 
 -----
 Job is of type individual. Takes the user input of starttime, endtime, and geospatial extent, and queries the CMR for the given product type. Publishes all results that do not exist on GRQ.
 
+MET-<short_name>-<start_time>_<end_time>-<version>
+

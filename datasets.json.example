@@ -1,6 +1,6 @@
   {
     "ipath": "hysds::data/metadata-AST_L1T",
-    "match_pattern": "/(?P<dataset_type>MET)-(?P<short_name>AST_L1T)-(?P<year>\\d{4})(?P<month>\\d{2})(?P<day>\\d{2})-(?P<producer_granule_id>.*)-(?P<version>.*?)$",
+    "match_pattern": "/(?P<dataset_type>MET)-(?P<short_name>AST_L1T)-(?P<year>\\d{4})(?P<month>\\d{2})(?P<day>\\d{2})T(?P<rest>.*)-(?P<version>.*?)$",
     "alt_match_pattern": null,
     "extractor": null,
     "level": "l1",
@@ -8,7 +8,7 @@
   },
   {
     "ipath": "hysds::data/metadata-AST_09T",
-    "match_pattern": "/(?P<dataset_type>MET)-(?P<short_name>AST_09T)-(?P<year>\\d{4})(?P<month>\\d{2})(?P<day>\\d{2})-(?P<producer_granule_id>.*)-(?P<version>.*?)$",
+    "match_pattern": "/(?P<dataset_type>MET)-(?P<short_name>AST_09T)-(?P<year>\\d{4})(?P<month>\\d{2})(?P<day>\\d{2})T(?P<rest>.*)-(?P<version>.*?)$",
     "alt_match_pattern": null,
     "extractor": null,
     "level": "l1",
@@ -16,7 +16,7 @@
   },
   {
     "ipath": "hysds::data/metadata-AST_L1B",
-    "match_pattern": "/(?P<dataset_type>MET)-(?P<short_name>AST_L1B)-(?P<year>\\d{4})(?P<month>\\d{2})(?P<day>\\d{2})-(?P<producer_granule_id>.*)-(?P<version>.*?)$",
+    "match_pattern": "/(?P<dataset_type>MET)-(?P<short_name>AST_L1B)-(?P<year>\\d{4})(?P<month>\\d{2})(?P<day>\\d{2})T(?P<rest>.*)-(?P<version>.*?)$",
     "alt_match_pattern": null,
     "extractor": null,
     "level": "l1",
@@ -24,7 +24,7 @@
   },
   {
     "ipath": "hysds::data/metadata-EO1_ALI",
-    "match_pattern": "/(?P<dataset_type>MET)-(?P<short_name>EO1_ALI)-(?P<year>\\d{4})(?P<month>\\d{2})(?P<day>\\d{2})-(?P<producer_granule_id>.*)-(?P<version>.*?)$",
+    "match_pattern": "/(?P<dataset_type>MET)-(?P<short_name>EO1_ALI)-(?P<year>\\d{4})(?P<month>\\d{2})(?P<day>\\d{2})T(?P<rest>.*)-(?P<version>.*?)$",
     "alt_match_pattern": null,
     "extractor": null,
     "level": "l1",
@@ -32,7 +32,7 @@
   },
   {
     "ipath": "hysds::data/metadata-EO1_Hyperion",
-    "match_pattern": "/(?P<dataset_type>MET)-(?P<short_name>EO1_Hyperion)-(?P<year>\\d{4})(?P<month>\\d{2})(?P<day>\\d{2})-(?P<producer_granule_id>.*)-(?P<version>.*?)$",
+    "match_pattern": "/(?P<dataset_type>MET)-(?P<short_name>EO1_Hyperion)-(?P<year>\\d{4})(?P<month>\\d{2})(?P<day>\\d{2})T(?P<rest>.*)-(?P<version>.*?)$",
     "alt_match_pattern": null,
     "extractor": null,
     "level": "l1",
@@ -40,7 +40,7 @@
   },
   {
     "ipath": "hysds::data/metadata-ASTGTM",
-    "match_pattern": "/(?P<dataset_type>MET)-(?P<short_name>ASTGTM)-(?P<year>\\d{4})(?P<month>\\d{2})(?P<day>\\d{2})-(?P<producer_granule_id>.*)-(?P<version>.*?)$",
+    "match_pattern": "/(?P<dataset_type>MET)-(?P<short_name>ASTGTM)-(?P<year>\\d{4})(?P<month>\\d{2})(?P<day>\\d{2})T(?P<rest>.*)-(?P<version>.*?)$",
     "alt_match_pattern": null,
     "extractor": null,
     "level": "l1",
@@ -48,7 +48,7 @@
   },
   {
     "ipath": "hysds::data/metadata-AST14DEM",
-    "match_pattern": "/(?P<dataset_type>MET)-(?P<short_name>AST14DEM)-(?P<year>\\d{4})(?P<month>\\d{2})(?P<day>\\d{2})-(?P<producer_granule_id>.*)-(?P<version>.*?)$",
+    "match_pattern": "/(?P<dataset_type>MET)-(?P<short_name>AST14DEM)-(?P<year>\\d{4})(?P<month>\\d{2})(?P<day>\\d{2})T(?P<producer_granule_id>.*)-(?P<version>.*?)$",
     "alt_match_pattern": null,
     "extractor": null,
     "level": "l1",
