@@ -46,12 +46,12 @@ def main():
         # generate product
         ds, met = gen_product(result, shortname)
         # ingest product
-        ingest_product(ds, met)
+        #ingest_product(ds, met)
         # verdi ingest
-        #uid = ds.get('label')
-        #if exists(uid, shortname):
-        #    continue
-        #save_product_met(uid, ds, met)
+        uid = ds.get('label')
+        if exists(uid, shortname):
+            continue
+        save_product_met(uid, ds, met)
 
 def gen_temporal_str(starttime, endtime):
     '''generates the temporal string for the cmr query'''
