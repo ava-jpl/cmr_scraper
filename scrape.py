@@ -101,6 +101,7 @@ def gen_product(result, shortname):
     ds = {"label": prod_id, "starttime": starttime, "endtime": endtime, "location": location, "version": VERSION}
     met = result
     met['shortname'] = shortname
+    met['short_name'] = shortname
     return ds, met
 
 def gen_prod_id(shortname, starttime, endtime):
