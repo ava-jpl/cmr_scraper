@@ -47,7 +47,6 @@ def main():
         ds, met = gen_product(result, shortname)
         # ingest product
         #ingest_product(ds, met)
-        shortname = met.get('short_name', '*')
         uid = ds.get('label')
         if exists(uid, shortname):
             continue
