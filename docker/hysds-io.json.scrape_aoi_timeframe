@@ -1,6 +1,6 @@
 {
   "label" : "CMR - Scrape AOI Timeframe",
-  "submission_type" : "individual",
+  "submission_type" : "iteration",
   "component" : "tosca",
   "allowed_accounts" : ["ops"],
   "params" : [
