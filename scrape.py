@@ -17,10 +17,17 @@ from hysds.dataset_ingest import ingest
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
+# production enviorment variables 
 VERSION = "v1.0"
 PROD = "MET-{}-{}-{}"
 PROD_TYPE = "grq_{}_metadata-{}"
-CMR_URL = 'https://cmr.earthdata.nasa.gov'
+CMR_URL_PROD = 'https://cmr.earthdata.nasa.gov'
+
+# testing enviorment variables
+VERSION = "v1.0"
+UAT = "MET-UAT-{}-{}-{}"
+UAT_TYPE = "grq_{}_metadata-uat-{}"
+CMR_URL_UAT = 'https://cmr.uat.earthdata.nasa.gov'
 
 
 def main():
@@ -30,6 +37,15 @@ def main():
     '''
     # load parameters
     ctx = load_context()
+    cmr_env = ctx.get("cmr_enviorment", False)
+    if cmr_env == "PROD":
+        cmr_url = CMR_URL_PROD
+        product_id = PROD
+        product_type = PROD_TYPE
+    elif cmr_env == "UAT":
+        cmr_url = CMR_URL_UAT
+        product_id = UAT
+        product_type = UAT_TYPE
     starttime = ctx.get("starttime", False)
     endtime = ctx.get("endtime", False)
     location = ctx.get("location", False)
@@ -39,17 +55,17 @@ def main():
     # build query
     temporal_str = gen_temporal_str(starttime, endtime)
     polygon_str = gen_spatial_str(location)
-    url = "{}/search/granules.json?page_size=2000{}{}&short_name={}&scroll=true".format(CMR_URL, temporal_str, polygon_str, shortname)
+    url = "{}/search/granules.json?page_size=2000{}{}&short_name={}&scroll=true".format(cmr_url, temporal_str, polygon_str, shortname)
     # run query
     results_list = run_query(url, verbose=2)
     for result in results_list:
         # generate product
-        ds, met = gen_product(result, shortname)
+        ds, met = gen_product(result, shortname, product_id)
         # ingest product
         #ingest_product(ds, met)
         # verdi ingest
         uid = ds.get('label')
-        if exists(uid, shortname):
+        if exists(uid, shortname, product_type):
             continue
         save_product_met(uid, ds, met)
 
@@ -91,25 +107,25 @@ def get_area(coords):
 def format_digit(digit):
     return "{0:.8g}".format(digit)
 
-def gen_product(result, shortname):
+def gen_product(result, shortname, product_id):
     '''generates a dataset.json and met.json dict for the product'''
     starttime = result["time_start"]
     dt_str = dateutil.parser.parse(starttime).strftime('%Y%m%d')
     endtime = result["time_end"]
     location = parse_location(result)
-    prod_id = gen_prod_id(shortname, starttime, endtime)
+    prod_id = gen_prod_id(product_id, shortname, starttime, endtime)
     ds = {"label": prod_id, "starttime": starttime, "endtime": endtime, "location": location, "version": VERSION}
     met = result
     met['shortname'] = shortname
     met['short_name'] = shortname
     return ds, met
 
-def gen_prod_id(shortname, starttime, endtime):
+def gen_prod_id(product_id, shortname, starttime, endtime):
     '''generates the product id from the input metadata & params'''
     start = dateutil.parser.parse(starttime).strftime('%Y%m%dT%H%M%S')
     end = dateutil.parser.parse(endtime).strftime('%Y%m%dT%H%M%S')
     time_str = '{}_{}'.format(start, end)
-    return PROD.format(shortname, time_str, VERSION)
+    return product_id.format(shortname, time_str, VERSION)
 
 def ingest_product(ds, met):
     '''publish a product directly'''
@@ -217,10 +233,10 @@ def save_product_met(prod_id, ds_obj, met_obj):
         json.dump(met_obj, outf)
 
 
-def exists(uid, shortname):
+def exists(uid, shortname, product_type):
     '''queries grq to see if the input id exists. Returns True if it does, False if not'''
     grq_ip = app.conf['GRQ_ES_URL']#.replace(':9200', '').replace('http://', 'https://')
-    grq_url = '{0}/{1}/_search'.format(grq_ip, PROD_TYPE.format(VERSION, shortname))
+    grq_url = '{0}/{1}/_search'.format(grq_ip, product_type.format(VERSION, shortname))
     es_query = {"query":{"bool":{"must":[{"term":{"id.raw":uid}}]}},"from":0,"size":1}
     return query_es(grq_url, es_query)
 

@@ -5,6 +5,15 @@
   "allowed_accounts" : ["ops"],
   "params" : [
     {
+      "name": "cmr_enviorment",
+      "from": "submitter",
+      "type": "enum",
+      "enumerables": [
+        "PROD",
+        "UAT"
+      ]
+    },
+    {
       "name": "short_name",
       "from": "submitter",
       "type": "enum",

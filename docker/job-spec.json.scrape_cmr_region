@@ -10,6 +10,10 @@
   "time_limit": 5500,
   "params" : [
     {
+      "name": "cmr_enviorment",
+      "destination": "context"
+    },
+    {
       "name": "short_name",
       "destination": "context"
     },
