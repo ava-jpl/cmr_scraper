@@ -46,7 +46,12 @@ def main():
         # generate product
         ds, met = gen_product(result, shortname)
         # ingest product
-        ingest_product(ds, met)
+        #ingest_product(ds, met)
+        # verdi ingest
+        uid = ds.get('label')
+        if exists(uid, shortname):
+            continue
+        save_product_met(uid, ds, met)
 
 def gen_temporal_str(starttime, endtime):
     '''generates the temporal string for the cmr query'''
@@ -96,6 +101,7 @@ def gen_product(result, shortname):
     ds = {"label": prod_id, "starttime": starttime, "endtime": endtime, "location": location, "version": VERSION}
     met = result
     met['shortname'] = shortname
+    met['short_name'] = shortname
     return ds, met
 
 def gen_prod_id(shortname, starttime, endtime):
@@ -127,7 +133,7 @@ def parse_location(result):
     poly = result["polygons"][0][0]
     coord_list = poly.split(' ')
     coords = [[[float(coord_list[i+1]), float(coord_list[i])] for i in range(0, len(coord_list), 2)]]
-    location = {"type": "Polygon", "location": coords}
+    location = {"type": "Polygon", "coordinates": coords}
     return location
 
 def get_session(verbose=False):
