@@ -57,7 +57,7 @@ def main():
     # build query
     temporal_str = gen_temporal_str(starttime, endtime)
     polygon_str = gen_spatial_str(location)
-    url = "{}/search/granules.json?page_size=2000{}{}&short_name={}&scroll=true".format(cmr_url, temporal_str, polygon_str, shortname, provider)
+    url = "{}/search/granules.json?page_size=2000{}{}&short_name={}&scroll=true&provider={}".format(cmr_url, temporal_str, polygon_str, shortname, provider)
     # run query
     results_list = run_query(url, verbose=2)
     for result in results_list:
