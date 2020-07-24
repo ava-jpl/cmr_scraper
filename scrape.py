@@ -42,10 +42,12 @@ def main():
         cmr_url = CMR_URL_PROD
         product_id = PROD
         product_type = PROD_TYPE
+        provider = "LPDAAC_ECS"
     elif cmr_env == "UAT":
         cmr_url = CMR_URL_UAT
         product_id = UAT
         product_type = UAT_TYPE
+        provider = "LPDAAC_TS1"
     starttime = ctx.get("starttime", False)
     endtime = ctx.get("endtime", False)
     location = ctx.get("location", False)
@@ -55,7 +57,7 @@ def main():
     # build query
     temporal_str = gen_temporal_str(starttime, endtime)
     polygon_str = gen_spatial_str(location)
-    url = "{}/search/granules.json?page_size=2000{}{}&short_name={}&scroll=true".format(cmr_url, temporal_str, polygon_str, shortname)
+    url = "{}/search/granules.json?page_size=2000{}{}&short_name={}&scroll=true".format(cmr_url, temporal_str, polygon_str, shortname, provider)
     # run query
     results_list = run_query(url, verbose=2)
     for result in results_list:
