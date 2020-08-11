@@ -17,11 +17,13 @@ from hysds.dataset_ingest import ingest
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
-# production enviorment variables 
+# production enviorment variables
 VERSION = "v1.0"
 PROD = "MET-{}-{}-{}"
 PROD_TYPE = "grq_{}_metadata-{}"
 CMR_URL_PROD = 'https://cmr.earthdata.nasa.gov'
+AST_09T_PROD_COLLECTION_ID = "C1299783609-LPDAAC_ECS"
+AST_L1B_PROD_COLLECTION_ID = "C190733714-LPDAAC_ECS"
 
 # testing enviorment variables
 VERSION = "v1.0"
@@ -38,26 +40,39 @@ def main():
     # load parameters
     ctx = load_context()
     cmr_env = ctx.get("cmr_enviorment", False)
-    if cmr_env == "PROD":
-        cmr_url = CMR_URL_PROD
-        product_id = PROD
-        product_type = PROD_TYPE
-        provider = "LPDAAC_ECS"
-    elif cmr_env == "UAT":
-        cmr_url = CMR_URL_UAT
-        product_id = UAT
-        product_type = UAT_TYPE
-        provider = "LPDAAC_TS1"
     starttime = ctx.get("starttime", False)
     endtime = ctx.get("endtime", False)
     location = ctx.get("location", False)
     shortname = ctx.get("short_name", False)
     if not shortname:
         raise Exception("short_name must be specified.")
+
     # build query
     temporal_str = gen_temporal_str(starttime, endtime)
     polygon_str = gen_spatial_str(location)
-    url = "{}/search/granules.json?page_size=2000{}{}&short_name={}&scroll=true&provider={}".format(cmr_url, temporal_str, polygon_str, shortname, provider)
+
+    if cmr_env == "PROD":
+        cmr_url = CMR_URL_PROD
+        product_id = PROD
+        product_type = PROD_TYPE
+        provider = "LPDAAC_ECS"
+        if shortname == "AST_L1B":
+            collection_concept_id = AST_L1B_PROD_COLLECTION_ID
+        elif shortname == "AST_09T":
+            collection_concept_id = AST_09T_PROD_COLLECTION_ID
+        else:
+            raise Exception(
+                "collection_concept_id not avaliable for shortname: {}".format(shortname))
+        url = "{}/search/granules.json?page_size=2000{}{}&short_name={}&scroll=true&provider={}&collection_concept_id={}".format(
+            cmr_url, temporal_str, polygon_str, shortname, provider, collection_concept_id)
+    elif cmr_env == "UAT":
+        cmr_url = CMR_URL_UAT
+        product_id = UAT
+        product_type = UAT_TYPE
+        provider = "LPDAAC_TS1"
+        url = "{}/search/granules.json?page_size=2000{}{}&short_name={}&scroll=true&provider={}".format(
+            cmr_url, temporal_str, polygon_str, shortname, provider)
+
     # run query
     results_list = run_query(url, verbose=2)
     for result in results_list:
@@ -71,12 +86,14 @@ def main():
             continue
         save_product_met(uid, ds, met)
 
+
 def gen_temporal_str(starttime, endtime):
     '''generates the temporal string for the cmr query'''
     start_str = ''
     end_str = ''
     if starttime:
-        start_str = dateutil.parser.parse(starttime).strftime('%Y-%m-%dT%H:%M:%SZ')
+        start_str = dateutil.parser.parse(
+            starttime).strftime('%Y-%m-%dT%H:%M:%SZ')
     if endtime:
         end_str = dateutil.parser.parse(endtime).strftime('%Y-%m-%dT%H:%M:%SZ')
     # build query
@@ -85,19 +102,22 @@ def gen_temporal_str(starttime, endtime):
         temporal_span = '&temporal={0},{1}'.format(start_str, end_str)
     return temporal_span
 
+
 def gen_spatial_str(location):
     '''generates the spatial string for the cmr query'''
     if not location:
         return ''
     coords = location['coordinates'][0]
-    if get_area(coords) > 0: #reverse orde1r if not clockwise
+    if get_area(coords) > 0:  # reverse orde1r if not clockwise
         coords = coords[::-1]
-    coord_str = ','.join([','.join([format_digit(x) for x in c]) for c in coords])
+    coord_str = ','.join([','.join([format_digit(x)
+                                    for x in c]) for c in coords])
     return '&polygon={}'.format(coord_str)
-    
+
+
 def get_area(coords):
     '''get area of enclosed coordinates- determines clockwise or counterclockwise order'''
-    n = len(coords) # of corners
+    n = len(coords)  # of corners
     area = 0.0
     for i in range(n):
         j = (i + 1) % n
@@ -106,8 +126,10 @@ def get_area(coords):
     #area = abs(area) / 2.0
     return area / 2
 
+
 def format_digit(digit):
     return "{0:.8g}".format(digit)
+
 
 def gen_product(result, shortname, product_id):
     '''generates a dataset.json and met.json dict for the product'''
@@ -116,11 +138,13 @@ def gen_product(result, shortname, product_id):
     endtime = result["time_end"]
     location = parse_location(result)
     prod_id = gen_prod_id(product_id, shortname, starttime, endtime)
-    ds = {"label": prod_id, "starttime": starttime, "endtime": endtime, "location": location, "version": VERSION}
+    ds = {"label": prod_id, "starttime": starttime,
+          "endtime": endtime, "location": location, "version": VERSION}
     met = result
     met['shortname'] = shortname
     met['short_name'] = shortname
     return ds, met
+
 
 def gen_prod_id(product_id, shortname, starttime, endtime):
     '''generates the product id from the input metadata & params'''
@@ -128,6 +152,7 @@ def gen_prod_id(product_id, shortname, starttime, endtime):
     end = dateutil.parser.parse(endtime).strftime('%Y%m%dT%H%M%S')
     time_str = '{}_{}'.format(start, end)
     return product_id.format(shortname, time_str, VERSION)
+
 
 def ingest_product(ds, met):
     '''publish a product directly'''
@@ -140,25 +165,29 @@ def ingest_product(ds, met):
         return
     print('Product with uid: {} does not exist. Publishing...'.format(uid))
     try:
-        ingest(uid, './datasets.json', app.conf.GRQ_UPDATE_URL, app.conf.DATASET_PROCESSED_QUEUE, ds_dir, None) 
+        ingest(uid, './datasets.json', app.conf.GRQ_UPDATE_URL,
+               app.conf.DATASET_PROCESSED_QUEUE, ds_dir, None)
         if os.path.exists(uid):
             shutil.rmtree(uid)
     except:
         raise Exception('failed on submission of {0}'.format(uid))
 
+
 def parse_location(result):
     '''parse out the geojson from the CMR return'''
     poly = result["polygons"][0][0]
     coord_list = poly.split(' ')
-    coords = [[[float(coord_list[i+1]), float(coord_list[i])] for i in range(0, len(coord_list), 2)]]
+    coords = [[[float(coord_list[i+1]), float(coord_list[i])]
+               for i in range(0, len(coord_list), 2)]]
     location = {"type": "Polygon", "coordinates": coords}
     return location
+
 
 def get_session(verbose=False):
     '''returns a CMR requests session'''
     #user = os.getenv('CMR_USERNAME')
     #passwd = os.getenv('CMR_PASSWORD')
-    #if user is None or passwd is None:
+    # if user is None or passwd is None:
     #    if verbose > 1:
     #        print ("Environment username & password not found")
     return requests.Session()
@@ -171,11 +200,12 @@ def get_session(verbose=False):
     #session = requests.Session()
     #r = session.post(token_url, data=data, headers=headers)
     #if verbose: print(r.text)
-    #r.raise_for_status()
+    # r.raise_for_status()
     #robj = xml.etree.ElementTree.fromstring(r.text)
     #token = robj.find('id').text
     #if verbose: print("using session token:".format(token))
-    #return session
+    # return session
+
 
 def run_query(query_url, verbose=False):
     """runs a scrolling query over the given url and returns the result as a dictionary"""
@@ -183,14 +213,14 @@ def run_query(query_url, verbose=False):
         print('querying url: {0}'.format(query_url))
     granule_list = []
     session = get_session(verbose=verbose)
-    #initial query
+    # initial query
     response = session.get(query_url)
     response.raise_for_status()
     granule_list.extend(json.loads(response.text)["feed"]["entry"])
-    #get headers for scrolling
+    # get headers for scrolling
     tot_granules = response.headers["CMR-Hits"]
     scroll_id = response.headers["CMR-Scroll-Id"]
-    headers = {'CMR-Scroll-Id' : scroll_id}
+    headers = {'CMR-Scroll-Id': scroll_id}
     if len(granule_list) is 0:
         if verbose > 0:
             print('no granules returned')
@@ -220,8 +250,10 @@ def run_query(query_url, verbose=False):
     if verbose:
         print("query returned {0} total granules".format(len(granule_list)))
     if len(granule_list) != int(tot_granules):
-        raise Exception("Total granules returned from query do not match expected granule count")
+        raise Exception(
+            "Total granules returned from query do not match expected granule count")
     return granule_list
+
 
 def save_product_met(prod_id, ds_obj, met_obj):
     '''generates the appropriate product json files in the product directory'''
@@ -237,10 +269,13 @@ def save_product_met(prod_id, ds_obj, met_obj):
 
 def exists(uid, shortname, product_type):
     '''queries grq to see if the input id exists. Returns True if it does, False if not'''
-    grq_ip = app.conf['GRQ_ES_URL']#.replace(':9200', '').replace('http://', 'https://')
-    grq_url = '{0}/{1}/_search'.format(grq_ip, product_type.format(VERSION, shortname))
-    es_query = {"query":{"bool":{"must":[{"term":{"id.raw":uid}}]}},"from":0,"size":1}
+    grq_ip = app.conf['GRQ_ES_URL']  # .replace(':9200', '').replace('http://', 'https://')
+    grq_url = '{0}/{1}/_search'.format(grq_ip,
+                                       product_type.format(VERSION, shortname))
+    es_query = {
+        "query": {"bool": {"must": [{"term": {"id.raw": uid}}]}}, "from": 0, "size": 1}
     return query_es(grq_url, es_query)
+
 
 def query_es(grq_url, es_query):
     '''simple single elasticsearch query, used for existence. returns count of result.'''
@@ -256,6 +291,7 @@ def query_es(grq_url, es_query):
     total_count = results.get('hits', {}).get('total', 0)
     return int(total_count)
 
+
 def load_context():
     '''loads the context file into a dict'''
     try:
@@ -265,6 +301,7 @@ def load_context():
         return context
     except:
         raise Exception('unable to parse _context.json from work directory')
+
 
 if __name__ == '__main__':
     main()
