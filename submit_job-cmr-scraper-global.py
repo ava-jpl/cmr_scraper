@@ -18,6 +18,7 @@ def main(job_name, short_name, job_params, job_version, queue, priority, tag_tem
     '''
     submits a job to mozart to start pager job
     '''
+    # requests retry parameters
     retry_strategy = Retry(total=3, status_forcelist=[429, 500, 502, 503, 504], method_whitelist=["HEAD", "GET", "OPTIONS"])
     adapter = HTTPAdapter(max_retries=retry_strategy)
     Requests = requests.Session()
