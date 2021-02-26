@@ -12,7 +12,7 @@ import requests
 from hysds.celery import app
 
 
-def main(job_name, short_name, job_params, job_version, queue, priority, tags):
+def main(job_name, short_name, job_params, job_version, queue, priority, tag_template):
     '''
     submits a job to mozart to start pager job
     '''
@@ -24,7 +24,7 @@ def main(job_name, short_name, job_params, job_version, queue, priority, tags):
         location = locations[volcano]
         job_params["short_name"] = short_name
         job_params["location"] = location
-        tags = "{}-{}-{}".format(tags, volcano, short_name)
+        tags = "{}-{}-{}".format(tag_template, volcano, short_name)
 
         # submit mozart job
         job_submit_url = "{}{}".format(app.conf['MOZART_REST_URL'], '/job/submit')
