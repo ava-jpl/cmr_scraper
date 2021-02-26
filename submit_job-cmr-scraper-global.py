@@ -9,6 +9,8 @@ import os
 import json
 import argparse
 import requests
+from requests.adapters import HTTPAdapter
+from requests.packages.urllib3.util.retry import Retry
 from hysds.celery import app
 
 
@@ -16,6 +18,12 @@ def main(job_name, short_name, job_params, job_version, queue, priority, tag_tem
     '''
     submits a job to mozart to start pager job
     '''
+    retry_strategy = Retry(total=3, status_forcelist=[429, 500, 502, 503, 504], method_whitelist=["HEAD", "GET", "OPTIONS"])
+    adapter = HTTPAdapter(max_retries=retry_strategy)
+    Requests = requests.Session()
+    Requests.mount("https://", adapter)
+    Requests.mount("http://", adapter)
+
     # get volcano locations
     locations = query_volcano_locations()
 
@@ -37,7 +45,7 @@ def main(job_name, short_name, job_params, job_version, queue, priority, tag_tem
             'enable_dedup': True
         }
         print('submitting jobs with params: %s' % json.dumps(params))
-        r = requests.post(job_submit_url, params=params, verify=False)
+        r = Requests.post(job_submit_url, params=params, verify=False)
         if r.status_code != 200:
             print('submission job failed')
             r.raise_for_status()
