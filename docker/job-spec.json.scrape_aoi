@@ -6,8 +6,8 @@
     "/home/ops/.aws": "/home/ops/.aws"
   },
   "disk_usage":"3GB",
-  "soft_time_limit": 1200,
-  "time_limit": 1300,
+  "soft_time_limit": 3600,
+  "time_limit": 3700,
   "params" : [
     {
       "name": "cmr_enviorment",
