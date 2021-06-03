@@ -9,6 +9,7 @@ import os
 import json
 import argparse
 import requests
+from datetime import date
 from requests.adapters import HTTPAdapter
 from requests.packages.urllib3.util.retry import Retry
 from hysds.celery import app
@@ -104,6 +105,9 @@ def query_volcano_locations():
 
 
 if __name__ == "__main__":
+    today = date.today()
+    date = today.strftime("%Y%m%d")
+    default_tags = str(date) + 'automated-cmr-metadata-scrape';
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('-j', '--job_name', help='Job name',
                         dest='job_name', required=False, default="job-scrape_aoi")
@@ -118,7 +122,7 @@ if __name__ == "__main__":
     parser.add_argument('-pr', '--priority', help='Job priority',
                         dest='priority', required=False, default='2')
     parser.add_argument('-g', '--tags', help='Job tags. Use a comma separated list for more than one',
-                        dest='tags', required=False, default='automated-cmr-metadata-scrape')
+                        dest='tags', required=False, default=default_tags)
     args = parser.parse_args()
     main(args.job_name, args.short_name, args.params, args.version,
          args.queue, args.priority, args.tags)
